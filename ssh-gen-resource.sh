@@ -86,15 +86,17 @@ outputfile=\$1
 # metadata about the Node
 hostname=\$(hostname)
 osArch=\$(uname -p)
-osName=\$(uname -s)
-osVers=\$(uname -r)
+osVers=\$(lsb_release -d | cut -d: -f2 | sed s/'^\t'//)
+osName=\$(lsb_release -c | cut -d: -f2 | sed s/'^\t'//)
+osFamily=\$(uname | tr "[:upper:]" "[:lower:]")
+osKernel=\$(uname -r)
 username=\$(whoami)
 dstamp=\$(date "+%Y-%m-%d %H:%M:%S")
+tags=\$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
 # print out the xml element
-echo "  <node name='\${hostname}' description='Last updated \${dstamp}' \
- osArch='\${osArch}' osName='\${osName}' osVers='\${osVers}' \
- username='\${username}' \
- tags='' />" > \$outputfile
+# <node name="<server name>" description="Rundeck server node" tags="" hostname="<server name>" osArch="amd64" osFamily="unix" osName="Linux" osVersion="3.2.0-24-virtual" username="root"/>
+echo "  <node name='\${hostname}' description='Last updated \${dstamp}' tags='\${tags}' hostname='\${hostname}' osArch='\${osArch}' \
+osFamily='\${osFamily}' osName='\${osName}' osVersion='\${osVers}' Kernel='\${osKernel}' username='\${username}'/>" > \$outputfile
 EOF
 fi
 
