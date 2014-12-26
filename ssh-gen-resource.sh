@@ -47,7 +47,7 @@ do
         SSH_USER=$OPTARG
         ;;
     i)
-        SSHID_FILE=$OPTARG
+        SSHID_FILE="-i ${OPTARG}"
         ;;
     f)
         HOST_FILE=$OPTARG
@@ -69,7 +69,7 @@ verbose() { [ "$VERBOSE" == "1" ] && { echo "VERBOSE : $*" 1>&2 ; } }
 [ -s "$SSHID_FILE" -a ! -r "$SSHID_FILE" ] && {
     die "file not readable: $SSHID_FILE"
 } || {
-    SSH_ARGS="$SSH_ARGS -i $SSHID_FILE"
+    SSH_ARGS="$SSH_ARGS $SSHID_FILE"
 }
 
 mkdir -p ${WORKSPACE} || { die "Failed creating data directory: $WORKSPACE" ; }
@@ -112,7 +112,7 @@ do
     host=${hostinfo[0]}
     verbose "collecting node info from host: ${host} ..."
     scp $SSH_ARGS $NODE_SCRIPT ${SSH_USER}@${host}:/tmp/$(basename $NODE_SCRIPT) || {
-    die "Failed copying collection script on host: ${host}"
+    	die "Failed copying collection script on host: ${host}"
     }
     ssh $SSH_ARGS -n ${SSH_USER}@${host} sh /tmp/$(basename $NODE_SCRIPT) /tmp/node.xml.$$ || {
         die "Failed executing collection script on host: ${host}"
